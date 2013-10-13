@@ -1,19 +1,34 @@
 # More Listing Framework Columns plugin for Movable Type
 
-Movable Type's Listing Framework is a fantastic way to get an overview and review content -- it's responsible for the "Manage" screens. The column sorting and filtering options are very powerful!
+Movable Type's Listing Framework is a fantastic way to get an overview and
+review content -- it's responsible for the "Manage" screens. The column sorting
+and filtering options are very powerful!
 
-You may have noticed, however, that not all content is visible on the Listing Framework screens. This plugin adds more columns to the Listing Framework, including Custom Fields!
+You may have noticed, however, that not all content is visible on the Listing
+Framework screens. This plugin adds more columns to the Listing Framework,
+including Custom Fields!
 
 ## Included Columns
 
-The following is a list of additional columns this plugin adds to the Listing Framework:
+The following is a list of additional columns this plugin adds to the Listing
+Framework:
 
 * Activity Log: ID, Class, Category, Level, Metadata
-* Assets: Class, Description, URL, File Path, File Name, File Extension, Image Width, Image Height
+
+* Assets: Class, Description, URL, File Path, File Name, File Extension, Image
+  Width, Image Height
+
 * Author: Basename, Preferred Language, Page Count
+
 * Blog: Description, Site Path, Site URL, Archive Path, Archive URL
+
 * Comment: ID, IP Address, Commenter URL, Commenter Email
+
+  Also, updated the Entry/Page column to include both a link to the edit the
+  Entry/Page, as well as a link to view the published page.
+
 * Commenters: Basename, Preferred Language
+
 * Website: Description, Site Path, Site URL, Archive Path, Archive URL
 
 # Prerequisites

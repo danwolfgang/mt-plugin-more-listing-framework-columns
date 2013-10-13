@@ -71,6 +71,65 @@ sub list_properties {
                 display => 'optional',
                 auto    => 1,
             },
+            # This has been defined already and is the Entry/Page column, used
+            # to show a link to the Edit Entry/Edit Page screen for the
+            # associated entry/page. We want to add to this, to show a
+            # published page link, too.
+            entry => {
+                bulk_html => sub {
+                    my $prop = shift;
+                    my ( $objs, $app ) = @_;
+                    my %entry_ids = map { $_->entry_id => 1 } @$objs;
+                    my @entries
+                        = MT->model('entry')
+                        ->load( { id => [ keys %entry_ids ], },
+                        { no_class => 1, } );
+                    my %entries = map { $_->id => $_ } @entries;
+                    my @result;
+
+                    for my $obj (@$objs) {
+                        my $id    = $obj->entry_id;
+                        my $entry = $entries{$id};
+                        if ( !$entry ) {
+                            push @result, MT->translate('Deleted');
+                            next;
+                        }
+
+                        my $type = $entry->class_type;
+                        my $img
+                            = MT->static_path
+                            . 'images/nav_icons/color/'
+                            . $type . '.gif';
+                        my $title_html
+                            = MT::ListProperty::make_common_label_html( $entry,
+                            $app, 'title', 'No title' );
+
+                        my $permalink = $entry->permalink;
+                        my $view_img
+                            = MT->static_path . 'images/status_icons/view.gif';
+                        my $view_link_text
+                            = MT->translate( 'View [_1]', $entry->class_label );
+                        my $view_link = $entry->status == MT::Entry::RELEASE()
+                            ? qq{
+                            <span class="view-link">
+                              <a href="$permalink" target="_blank">
+                                <img alt="$view_link_text" src="$view_img" />
+                              </a>
+                            </span>
+                        }
+                            : '';
+
+                        push @result, qq{
+                            <span class="icon target-type $type">
+                              <img src="$img" />
+                            </span>
+                            $title_html
+                            $view_link
+                        };
+                    }
+                    return @result;
+                },
+            },
         },
         # Authors
         author => {
