@@ -238,19 +238,26 @@ sub list_properties {
         },
     };
 
-    my $iter = MT->model('field')->load_iter();
+    my $iter = MT->model('field')->load_iter(
+        undef,
+        {
+            sort => 'name',
+        }
+    );
+    my $order = 10000;
     while ( my $field = $iter->() ) {
         # Check that the field is an available custom field type. If not, there
         # is no reason to add the field.
         next if !$app->registry( 'customfield_types', $field->type );
 
+        my $cf_basename = 'field.' . $field->basename;
+
         $menu->{ $field->obj_type }->{ $field->basename } = {
             label   => $field->name,
             display => 'optional',
-            order   => 2000,
+            order   => $order++,
             html    => sub {
                 my ( $prop, $obj, $app ) = @_;
-                my $cf_basename = 'field.' . $field->basename;
 
                 # Load the data dnd return the field value. If there is no
                 # value, just return an empty string -- otherwise, "null" is
