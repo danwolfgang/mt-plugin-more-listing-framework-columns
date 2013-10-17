@@ -11,7 +11,7 @@ including Custom Fields!
 ## Included Columns
 
 The following is a list of additional columns this plugin adds to the Listing
-Framework:
+Framework (in addition to Custom Fields for any object type):
 
 * Activity Log: ID, Class, Category, Level, Metadata
 
@@ -49,7 +49,7 @@ available.
 
 Custom Fields will be available for display, though note that the displayed
 value may not be what you expect. Some Custom Fields types such as "Single-Line
-Text" will display the content of the field, which other Custom Field types
+Text" will display the content of the field, while other Custom Field types
 such as "Checkbox" will simply display `1` or `0` to indicate true or
 false/checked or unchecked. Other more complex Custom Fields, such as those
 found in the

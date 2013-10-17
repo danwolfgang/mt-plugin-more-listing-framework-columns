@@ -323,9 +323,37 @@ sub list_properties {
                 # returned.
                 return $obj->$cf_basename
                     || '';
-            }
+            },
+            filter_tmpl => '<mt:var name="filter_form_string">',
+            grep => sub {
+                my $prop = shift;
+                my ( $args, $objs, $opts ) = @_;
+                my $option = $args->{option};
+                my $query  = $args->{string};
+
+                # my @result = grep { $_->$cf_basename =~ /little/ } @$objs;
+                my @result = grep { 
+                    filter_custom_field({
+                        option => $option,
+                        query  => $query,
+                        field  => $_->$cf_basename,
+                    }) 
+                } @$objs;
+
+                return @result;
+            },
+            # Make the column sortable
+            bulk_sort => sub {
+                my $prop = shift;
+                my ($objs, $opts) = @_;
+                return sort {
+                    $a->$cf_basename cmp $b->$cf_basename
+                } @$objs;
+            },
         };
     }
+
+
 
     return $menu;
 }
@@ -336,6 +364,33 @@ sub url_link {
     my ( $prop, $obj, $app ) = @_;
     my $url = $prop->col;
     return '<a href="' . $obj->$url . '">' . $obj->$url . '</a>';
+}
+
+# Filter custom fields with the specified text and option. This isn't perfect;
+# it's really focused on parsing strings. Other, more complext, types of CF data
+# probably can't be well-filtered by this basic capability.
+sub filter_custom_field {
+    my ($arg_ref) = @_;
+    my $option = $arg_ref->{option};
+    my $query  = $arg_ref->{query};
+    my $field  = $arg_ref->{field};
+
+    if ( 'equal' eq $option ) {
+        return $field =~ /^$query$/;
+    }
+    if ( 'contains' eq $option ) {
+        return $field =~ /$query/i;
+    }
+    elsif ( 'not_contains' eq $option ) {
+        return $field !~ /$query/i;
+    }
+    elsif ( 'beginning' eq $option ) {
+        return $field =~ /^$query/i;
+    }
+    elsif ( 'end' eq $option ) {
+        return $field =~ /$query$/i;
+    }
+    
 }
 
 1;
