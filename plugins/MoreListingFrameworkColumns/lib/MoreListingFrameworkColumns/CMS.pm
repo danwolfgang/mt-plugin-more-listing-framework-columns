@@ -40,6 +40,11 @@ sub list_properties {
                 display => 'optional',
                 auto    => 1,
             },
+            # MT has a definition for the "By" column but it's forced on by
+            # default, which is not necessarily useful.
+            by => {
+                display => 'default',
+            },
         },
         # Comment
         comment => {
