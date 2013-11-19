@@ -312,6 +312,12 @@ sub list_properties {
                 auto    => 1,
                 html    => \&url_link,
             },
+            theme_label => {
+                label   => 'Theme',
+                display => 'optional',
+                order   => 605,
+                html    => \&theme_label,
+            },
         },
         # Website
         website => {
@@ -346,6 +352,12 @@ sub list_properties {
                 order   => 278,
                 auto    => 1,
                 html    => \&url_link,
+            },
+            theme_label => {
+                label   => 'Theme',
+                display => 'optional',
+                order   => 605,
+                html    => \&theme_label,
             },
         },
     };
@@ -439,6 +451,29 @@ sub url_link {
     my ( $prop, $obj, $app ) = @_;
     my $url = $prop->col;
     return '<a href="' . $obj->$url . '">' . $obj->$url . '</a>';
+}
+
+sub theme_label {
+    my ( $prop, $obj, $app ) = @_;
+    my $id = $obj->theme_id
+        or return '<em>No theme applied</em>';
+
+    # look for registry.
+    my $registry = MT->registry('themes');
+    require MT::Theme;
+    my $theme = MT::Theme->_load_from_registry( $id, $registry->{$id} );
+
+    ## if not exists in registry, going to look for theme directory.
+    $theme = MT::Theme->_load_from_themes_directory($id)
+        unless defined $theme;
+
+    ## at last, search for template set.
+    $theme = MT::Theme->_load_pseudo_theme_from_template_set($id)
+        unless defined $theme;
+
+    return defined $theme && $theme->registry('label')
+        ? $theme->registry('label')
+        : "Failed to load theme: $id";
 }
 
 # Filter custom fields with the specified text and option. This isn't perfect;

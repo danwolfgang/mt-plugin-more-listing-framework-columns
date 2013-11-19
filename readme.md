@@ -27,7 +27,7 @@ Framework (in addition to Custom Fields for any object type):
 
 * Author: ID, Basename, Preferred Language, Page Count, Lockout Status
 
-* Blog: Description, Site Path, Site URL, Archive Path, Archive URL
+* Blog: Description, Site Path, Site URL, Archive Path, Archive URL, Theme
 
 * Comment: ID, IP Address, Commenter URL, Commenter Email
 
@@ -36,7 +36,7 @@ Framework (in addition to Custom Fields for any object type):
 
 * Commenters: Basename, Preferred Language
 
-* Website: Description, Site Path, Site URL, Archive Path, Archive URL
+* Website: Description, Site Path, Site URL, Archive Path, Archive URL, Theme
 
 # Prerequisites
 
