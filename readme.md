@@ -8,6 +8,13 @@ You may have noticed, however, that not all content is visible on the Listing
 Framework screens. This plugin adds more columns to the Listing Framework,
 including Custom Fields!
 
+By default, user-created Listing Framework filters are available to only the
+user that created them. Any user can access them through System Overview >
+Listing Filters, however this is less convenient than simply having them
+available on the screen they are for. So, this plugin will also make any
+user-created filter available to all users, making it easy to share filters
+with all users.
+
 ## Included Columns
 
 The following is a list of additional columns this plugin adds to the Listing

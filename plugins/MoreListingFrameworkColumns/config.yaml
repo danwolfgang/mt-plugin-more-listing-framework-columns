@@ -5,4 +5,7 @@ author_link: http://uinnovations.com
 plugin_link: http://github.com/danwolfgang/mt-plugin-more-listing-framework-columns
 version:     1.0.2
 
+callbacks:
+    list_template_param: $MorelistingFrameworkColumns::MoreListingFrameworkColumns::CMS::list_template_param
+
 list_properties: $MorelistingFrameworkColumns::MoreListingFrameworkColumns::CMS::list_properties

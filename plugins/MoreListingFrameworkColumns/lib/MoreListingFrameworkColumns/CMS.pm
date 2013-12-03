@@ -3,6 +3,23 @@ package MoreListingFrameworkColumns::CMS;
 use strict;
 use warnings;
 
+# Update all of the listing framework screens to include filters that any user
+# has created, not just the filters the current user created.
+sub list_template_param {
+    my ($cb, $app, $param, $tmpl) = @_;
+    my $type = $param->{object_type};
+
+    my $filters = build_filters( $app, $type, encode_html => 1 );
+
+    require JSON;
+    my $json = JSON->new->utf8(0);
+
+    # Update the parameters with the new filters.
+    $param->{filters}     = $json->encode($filters);
+    $param->{filters_raw} = $filters;
+
+}
+
 sub list_properties {
     my $app = MT->instance;
 
@@ -396,6 +413,61 @@ sub filter_custom_field {
         return $field =~ /$query$/i;
     }
     
+}
+
+# From MT::CMS::Filter
+# Saved filters should be available for all users. Below, the filter model load
+# should not be restricted to the user that created it.
+sub build_filters {
+    my ( $app, $type, %opts ) = @_;
+    MT->log('Got here.');
+    my $obj_class    = MT->model($type);
+
+    # my @user_filters = MT->model('filter')
+    #     ->load( { author_id => $app->user->id, object_ds => $type } );
+    my @user_filters = MT->model('filter')
+        ->load( { object_ds => $type } );
+
+    @user_filters = map { $_->to_hash } @user_filters;
+
+    my @sys_filters;
+    my $sys_filters = MT->registry( system_filters => $type );
+    for my $sys_id ( keys %$sys_filters ) {
+        next if $sys_id =~ /^_/;
+        my $sys_filter = MT::CMS::Filter::system_filter( $app, $type, $sys_id )
+            or next;
+        push @sys_filters, $sys_filter;
+    }
+    @sys_filters = sort { $a->{order} <=> $b->{order} } @sys_filters;
+
+    #FIXME: Is this always right path to get it?
+    my @legacy_filters;
+    my $legacy_filters
+        = MT->registry( applications => cms => list_filters => $type );
+    for my $legacy_id ( keys %$legacy_filters ) {
+        next if $legacy_id =~ /^_/;
+        my $legacy_filter = MT::CMS::Filter::legacy_filter( $app, $type, $legacy_id )
+            or next;
+        push @legacy_filters, $legacy_filter;
+    }
+
+    my @filters = ( @user_filters, @sys_filters, @legacy_filters );
+    for my $filter (@filters) {
+        my $label = $filter->{label};
+        if ( 'CODE' eq ref $label ) {
+            $filter->{label} = $label->();
+        }
+        if ( $opts{encode_html} ) {
+            MT::Util::deep_do(
+                $filter,
+                sub {
+                    my $ref = shift;
+                    $$ref = MT::Util::encode_html($$ref);
+                }
+            );
+        }
+    }
+    return \@filters;
 }
 
 1;
