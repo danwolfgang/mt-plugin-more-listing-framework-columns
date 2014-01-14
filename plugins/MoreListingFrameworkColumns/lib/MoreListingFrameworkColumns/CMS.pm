@@ -340,7 +340,7 @@ sub list_properties {
             html    => sub {
                 my ( $prop, $obj, $app ) = @_;
 
-                # Load the data dnd return the field value. If there is no
+                # Load the data and return the field value. If there is no
                 # value, just return an empty string -- otherwise, "null" is
                 # returned.
                 return $obj->$cf_basename
@@ -420,8 +420,7 @@ sub filter_custom_field {
 # should not be restricted to the user that created it.
 sub build_filters {
     my ( $app, $type, %opts ) = @_;
-    MT->log('Got here.');
-    my $obj_class    = MT->model($type);
+    my $obj_class = MT->model($type);
 
     # my @user_filters = MT->model('filter')
     #     ->load( { author_id => $app->user->id, object_ds => $type } );
@@ -473,4 +472,3 @@ sub build_filters {
 1;
 
 __END__
-
