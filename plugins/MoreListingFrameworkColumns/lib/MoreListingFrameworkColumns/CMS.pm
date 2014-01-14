@@ -337,6 +337,28 @@ sub list_properties {
             label   => $field->name,
             display => 'optional',
             order   => $order++,
+            condition => sub {
+                my ($prop) = shift;
+
+                # Show the field at the System Overview
+                return 1 if !$app->blog;
+
+                # Show the field at the blog level
+                return 1 if
+                    $app->blog
+                    && $app->blog->class eq 'blog'
+                    && $app->blog->id eq $field->blog_id;
+
+                # Show the field at the website level if the field is in a
+                # child blog.
+                my $field_blog = $app->model('blog')->load( $field->blog_id );
+                return 1 if
+                    $app->blog
+                    && $app->blog->class eq 'website'
+                    && $field_blog->parent_id eq $app->blog->id;
+
+                return 0;
+            },
             html    => sub {
                 my ( $prop, $obj, $app ) = @_;
 
