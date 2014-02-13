@@ -25,7 +25,7 @@ Framework (in addition to Custom Fields for any object type):
 * Assets: Class, Description, URL, File Path, File Name, File Extension, Image
   Width, Image Height
 
-* Author: Basename, Preferred Language, Page Count
+* Author: ID, Basename, Preferred Language, Page Count, Lockout Status
 
 * Blog: Description, Site Path, Site URL, Archive Path, Archive URL
 
@@ -72,4 +72,4 @@ This plugin is licensed under the same terms as Perl itself.
 
 #Copyright
 
-Copyright 2013, uiNNOVATIONS LLC. All rights reserved.
+Copyright 2014, uiNNOVATIONS LLC. All rights reserved.
