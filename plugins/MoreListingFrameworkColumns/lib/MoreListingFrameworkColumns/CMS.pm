@@ -190,10 +190,26 @@ sub list_properties {
                 # 'author_id' filter type for Pages is defined below.
                 filter_type  => 'author_id',
             },
-            # Doesn't work; can't find the column?
-            # lockout => {
-            #     display => 'optional',
-            # },
+            lockout => {
+                display   => 'optional',
+                # Generate content to be displayed in table cells for 'lockout'
+                # column because 'lockout' is not a real author field.
+                raw       => sub {
+                    my $prop = shift;
+                    my ( $obj, $app, $opts ) = @_;
+                    return $obj->locked_out 
+                    ? '* ' . MT->translate('Locked Out') . ' *'
+                    : MT->translate('Not Locked Out');
+                },
+                # Sort users on locked_out: 1 = Locked out; 0 = Not locked out
+                # Reverse direction of sort so locked out users are displayed
+                # first when 'Lockout' column is clicked the first time.
+                bulk_sort => sub {
+                    my $prop = shift;
+                    my ($objs) = @_;
+                    return sort { $b->locked_out <=> $a->locked_out } @$objs;
+                },
+            },
         },
         # Pages - Define 'author_id' filter type for Pages
         page => {
