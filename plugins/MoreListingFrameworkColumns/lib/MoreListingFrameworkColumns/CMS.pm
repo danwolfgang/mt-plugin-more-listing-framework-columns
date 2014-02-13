@@ -186,13 +186,26 @@ sub list_properties {
                 col_class    => 'num',
                 count_class  => 'page',
                 count_col    => 'author_id',
-                # Pages don't have an `author_id` filter type?
-                # filter_type  => 'author_id',
+                # Pages don't have an `author_id` filter type by default.
+                # 'author_id' filter type for Pages is defined below.
+                filter_type  => 'author_id',
             },
             # Doesn't work; can't find the column?
             # lockout => {
             #     display => 'optional',
             # },
+        },
+        # Pages - Define 'author_id' filter type for Pages
+        page => {
+            author_id => {
+                base            => 'entry.author_id',
+                label_via_param => sub {
+                    my $prop = shift;
+                    my ( $app, $val ) = @_;
+                    my $author = MT->model('author')->load($val);
+                    return MT->translate( 'Pages by [_1]', $author->nickname, );
+                },
+            },
         },
         # Commenters, really just a subset of Authors
         commenter => {
