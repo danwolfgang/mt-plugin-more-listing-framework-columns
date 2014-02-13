@@ -155,14 +155,16 @@ sub list_properties {
         },
         # Authors
         author => {
-            # Doesn't work?
-            # id => {
-            #     label   => 'ID',
-            #     display => 'force',
-            #     order   => 101,
-            #     base    => '__virtual.id',
-            #     auto    => 1,
-            # },
+            id => {
+                label   => 'ID',
+                display => 'optional',
+                order   => 1,
+                base    => '__virtual.id',
+                auto    => 1,
+                # MT::Author sets empty 'view' scope for 'id' column, which
+                # disables its display at any scope (system, website, blog).
+                view    => [ 'system' ],
+            },
             basename => {
                 label   => 'Basename',
                 order   => 1001,
