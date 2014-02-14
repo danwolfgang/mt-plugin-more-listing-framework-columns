@@ -155,14 +155,16 @@ sub list_properties {
         },
         # Authors
         author => {
-            # Doesn't work?
-            # id => {
-            #     label   => 'ID',
-            #     display => 'force',
-            #     order   => 101,
-            #     base    => '__virtual.id',
-            #     auto    => 1,
-            # },
+            id => {
+                label   => 'ID',
+                display => 'optional',
+                order   => 1,
+                base    => '__virtual.id',
+                auto    => 1,
+                # MT::Author sets empty 'view' scope for 'id' column, which
+                # disables its display at any scope (system, website, blog).
+                view    => [ 'system' ],
+            },
             basename => {
                 label   => 'Basename',
                 order   => 1001,
@@ -184,13 +186,42 @@ sub list_properties {
                 col_class    => 'num',
                 count_class  => 'page',
                 count_col    => 'author_id',
-                # Pages don't have an `author_id` filter type?
-                # filter_type  => 'author_id',
+                # Pages don't have an `author_id` filter type by default.
+                # 'author_id' filter type for Pages is defined below.
+                filter_type  => 'author_id',
             },
-            # Doesn't work; can't find the column?
-            # lockout => {
-            #     display => 'optional',
-            # },
+            lockout => {
+                display   => 'optional',
+                # Generate content to be displayed in table cells for 'lockout'
+                # column because 'lockout' is not a real author field.
+                raw       => sub {
+                    my $prop = shift;
+                    my ( $obj, $app, $opts ) = @_;
+                    return $obj->locked_out 
+                    ? '* ' . MT->translate('Locked Out') . ' *'
+                    : MT->translate('Not Locked Out');
+                },
+                # Sort users on locked_out: 1 = Locked out; 0 = Not locked out
+                # Reverse direction of sort so locked out users are displayed
+                # first when 'Lockout' column is clicked the first time.
+                bulk_sort => sub {
+                    my $prop = shift;
+                    my ($objs) = @_;
+                    return sort { $b->locked_out <=> $a->locked_out } @$objs;
+                },
+            },
+        },
+        # Pages - Define 'author_id' filter type for Pages
+        page => {
+            author_id => {
+                base            => 'entry.author_id',
+                label_via_param => sub {
+                    my $prop = shift;
+                    my ( $app, $val ) = @_;
+                    my $author = MT->model('author')->load($val);
+                    return MT->translate( 'Pages by [_1]', $author->nickname, );
+                },
+            },
         },
         # Commenters, really just a subset of Authors
         commenter => {
