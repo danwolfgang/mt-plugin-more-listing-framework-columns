@@ -386,6 +386,9 @@ sub list_properties {
                 # Show the field at the System Overview
                 return 1 if !$app->blog;
 
+                # Show the field if the field is a system-wide field
+                return 1 if !$field->blog_id;
+
                 # Show the field at the blog level
                 return 1 if
                     $app->blog
