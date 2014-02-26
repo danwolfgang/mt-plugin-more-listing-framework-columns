@@ -389,10 +389,9 @@ sub list_properties {
                 # Show the field if the field is a system-wide field
                 return 1 if !$field->blog_id;
 
-                # Show the field at the blog level
+                # Show the field at the blog/website level
                 return 1 if
                     $app->blog
-                    && $app->blog->class eq 'blog'
                     && $app->blog->id eq $field->blog_id;
 
                 # Show the field at the website level if the field is in a
