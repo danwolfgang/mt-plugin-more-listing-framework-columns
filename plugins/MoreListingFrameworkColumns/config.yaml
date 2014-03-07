@@ -3,7 +3,7 @@ description: 'Show additional columns in the Listing Framework instances.'
 author:      'Dan Wolfgang, uiNNOVATIONS'
 author_link: http://uinnovations.com
 plugin_link: http://github.com/danwolfgang/mt-plugin-more-listing-framework-columns
-version:     1.0.5
+version:     1.0.6
 
 callbacks:
     list_template_param: $MorelistingFrameworkColumns::MoreListingFrameworkColumns::CMS::list_template_param
