@@ -7,5 +7,6 @@ version:     1.0.6
 
 callbacks:
     list_template_param: $MorelistingFrameworkColumns::MoreListingFrameworkColumns::CMS::list_template_param
+    cms_filtered_list_param: $MorelistingFrameworkColumns::MoreListingFrameworkColumns::CMS::cms_filtered_list_param
 
 list_properties: $MorelistingFrameworkColumns::MoreListingFrameworkColumns::CMS::list_properties

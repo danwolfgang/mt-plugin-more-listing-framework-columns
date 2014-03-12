@@ -20,6 +20,21 @@ sub list_template_param {
 
 }
 
+# Listing screen .js calls mode=filtered_list (MT::CMS::Common::filtered_list),
+#   which overwrites .js filter list created in list_template_param sub above
+# Update .js data structure on listing framework screens to include filters
+#   that any user has created, not just the filters the current user created.
+sub cms_filtered_list_param {
+    my ( $cb, $app, $param, $objs ) = @_;
+
+    my $q = $app->param;
+    my $type = $q->param('datasource');
+
+    # Update .js data structure with the new filters.
+    my $filters = build_filters( $app, $type, encode_html => 1 );
+    $param->{filters} = $filters;
+}
+
 sub list_properties {
     my $app = MT->instance;
 
