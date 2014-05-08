@@ -467,7 +467,7 @@ sub list_properties {
 sub url_link {
     my ( $prop, $obj, $app ) = @_;
     my $url = $prop->col;
-    return '<a href="' . $obj->$url . '">' . $obj->$url . '</a>';
+    return '<a href="' . $obj->$url . '" target="_blank">' . $obj->$url . '</a>';
 }
 
 sub theme_label {
