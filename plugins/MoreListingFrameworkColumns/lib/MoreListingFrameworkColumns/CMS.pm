@@ -213,7 +213,7 @@ sub list_properties {
                 raw       => sub {
                     my $prop = shift;
                     my ( $obj, $app, $opts ) = @_;
-                    return $obj->locked_out 
+                    return $obj->locked_out
                     ? '* ' . MT->translate('Locked Out') . ' *'
                     : MT->translate('Not Locked Out');
                 },
@@ -491,13 +491,12 @@ sub list_properties {
                 my $option = $args->{option};
                 my $query  = $args->{string};
 
-                # my @result = grep { $_->$cf_basename =~ /little/ } @$objs;
-                my @result = grep { 
+                my @result = grep {
                     filter_custom_field({
                         option => $option,
                         query  => $query,
                         field  => $_->$cf_basename,
-                    }) 
+                    })
                 } @$objs;
 
                 return @result;
@@ -512,8 +511,6 @@ sub list_properties {
             },
         };
     }
-
-
 
     return $menu;
 }
@@ -573,7 +570,6 @@ sub filter_custom_field {
     elsif ( 'end' eq $option ) {
         return $field =~ /$query$/i;
     }
-    
 }
 
 # From MT::CMS::Filter
