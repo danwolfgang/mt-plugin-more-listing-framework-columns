@@ -2,6 +2,7 @@ package MoreListingFrameworkColumns::CMS;
 
 use strict;
 use warnings;
+use MT::Util qw( encode_html );
 
 # Update all of the listing framework screens to include filters that any user
 # has created, not just the filters the current user created.
@@ -375,6 +376,61 @@ sub list_properties {
                 html    => \&theme_label,
             },
         },
+        # Custom Fields
+        field => {
+            id => {
+                label   => 'ID',
+                display => 'optional',
+                order   => 1,
+                base    => '__virtual.id',
+                auto    => 1,
+            },
+            name => {
+                sub_fields => [
+                    # A "Required" icon appears next to the field name. This was
+                    # set up in the Commercial.pack already, but for some
+                    # reason is not enabled.
+                    {
+                        class   => 'required',
+                        label   => 'Required',
+                        display => 'default',
+                    },
+                    {
+                        # `description` is already styled so get around it by
+                        # using the shorter `desc`.
+                        class   => 'desc',
+                        label   => 'Description',
+                        display => 'optional',
+                    },
+                    {
+                        class   => 'template_tag',
+                        label   => 'Template Tag',
+                        display => 'optional',
+                    },
+                ],
+                # Overwrite the existing HTML for the field.
+                html => \&cf_name_field,
+            },
+            # This is the "System Object" column
+            obj_type => {
+                display => 'optional',
+            },
+            basename => {
+                display => 'optional',
+                order   => 500,
+            },
+            options => {
+                label => 'Field Options',
+                col   => 'options',
+                auto  => 1,
+                order => 600,
+            },
+            default => {
+                label => 'Default Value',
+                auto  => 1,
+                order => 601,
+            }
+        }
     };
 
     my $iter = MT->model('field')->load_iter(
@@ -572,6 +628,61 @@ sub build_filters {
         }
     }
     return \@filters;
+}
+
+# The Custom Field "Name" field can be used to display lots of pertinent
+# information.
+sub cf_name_field {
+    my ( $prop, $obj, $app ) = @_;
+    my $name = MT::Util::encode_html($obj->name);
+    my $tag  = MT::Util::encode_html($obj->tag);
+    my $current_blog_id = $app->param('blog_id') || 0;
+    my $blog_id = $obj->blog_id || 0;
+    my $scope_html;
+
+    if ( !$current_blog_id || $blog_id != $current_blog_id ) {
+        my $scope = 'System';
+        if ( $blog_id > 0 ) {
+            my $blog = MT->model('blog')->load($blog_id);
+            $scope = $blog->is_blog ? 'Blog' : 'Website';
+        }
+        my $scope_lc = lc $scope;
+        my $scope_label = MT->translate($scope);
+        $scope_html = qq{
+            <span class="cf-scope $scope_lc sticky-label">$scope_label</span>
+        };
+    }
+
+    my $required_label = MT->translate("Required");
+    my $required = $obj->required
+        ? qq{<span class="required sticky-label">$required_label</span>}
+        : q{};
+
+    my $desc = $obj->description
+        ? '<div class="desc" style="margin-bottom: 5px;">' . $obj->description . '</div>'
+        : '';
+
+    my $code = '<div class="template_tag">Template tag: <code class="code">&lt;mt:'
+        . $tag . ' /&gt;</code></div>';
+
+    my $user = $app->user;
+    if ( $user->is_superuser
+         || $user->permissions($obj->blog_id)->can_do('administer_blog') )
+    {
+        my $edit_link = $app->uri(
+            mode => 'view',
+            args => {
+                _type   => 'field',
+                id      => $obj->id,
+                blog_id => $obj->blog_id,
+            }
+        );
+        return qq{
+            $scope_html <a href="$edit_link">$name</a> $required $desc $code
+        };
+    } else {
+        return "$scope_html $name $required $desc $code";
+    }
 }
 
 1;

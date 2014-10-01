@@ -36,6 +36,9 @@ Framework (in addition to Custom Fields for any object type):
 
 * Commenters: Basename, Preferred Language
 
+* Custom Fields: ID, Required, Description, Field Options, Basename, and
+  Default Value. Also, simplified the Template Tag display.
+
 * Website: Description, Site Path, Site URL, Archive Path, Archive URL, Theme
 
 # Prerequisites
