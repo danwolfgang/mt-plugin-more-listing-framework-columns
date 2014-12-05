@@ -23,7 +23,7 @@ Framework (in addition to Custom Fields for any object type):
 * Activity Log: ID, Class, Category, Level, Metadata
 
 * Assets: Class, Description, URL, File Path, File Name, File Extension, Image
-  Width, Image Height
+  Width, Image Height, Appears In... (shows which objects use this asset)
 
 * Author: ID, Basename, Preferred Language, Page Count, Lockout Status
 

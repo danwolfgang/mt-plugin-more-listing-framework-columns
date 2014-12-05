@@ -293,6 +293,79 @@ sub list_properties {
                 display => 'optional',
                 order   => 502,
             },
+            appears_in => {
+                label   => 'Appears In...',
+                display => 'optional',
+                order   => 600,
+                html    => sub {
+                    my ( $prop, $obj, $app ) = @_;
+
+                    # Find any asset-entry (or asset-page) associations.
+                    my @objectassets = $app->model('objectasset')->load({
+                        asset_id => $obj->id,
+                    });
+
+                    my $html = '';
+                    foreach my $objectasset (@objectassets) {
+                        my $ds = $objectasset->object_ds;
+                        # Try to load the associated object.
+                        if (
+                            $app->model( $ds )
+                                ->exist( $objectasset->object_id )
+                        ) {
+                            my $assetobject = $app->model( $ds )
+                                ->load( $objectasset->object_id );
+
+                            # If this is an Entry or Page, build the edit and
+                            # view links.
+                            if ( $ds eq 'entry' || $ds eq 'page' ) {
+                                my $type = $assetobject->class_type;
+                                my $img
+                                    = $app->static_path
+                                    . 'images/nav_icons/color/'
+                                    . $type . '.gif';
+                                my $title_html
+                                    = MT::ListProperty::make_common_label_html(
+                                        $assetobject, $app, 'title', 'No title'
+                                    );
+
+                                my $permalink = $assetobject->permalink;
+                                my $view_img = $app->static_path
+                                    . 'images/status_icons/view.gif';
+                                my $view_link_text = MT->translate(
+                                    'View [_1]',
+                                    $assetobject->class_label
+                                );
+                                my $view_link = $assetobject->status == MT::Entry::RELEASE()
+                                    ? qq{
+                                    <span class="view-link">
+                                      <a href="$permalink" target="_blank">
+                                        <img alt="$view_link_text" src="$view_img" />
+                                      </a>
+                                    </span>
+                                }
+                                    : '';
+
+                                $html .= qq{
+                                    <p>
+                                        <span class="icon target-type $type">
+                                          <img src="$img" />
+                                        </span>&nbsp;$title_html&nbsp;$view_link
+                                    </p>
+                                };
+                            }
+                            # Not an Entry or Page association.
+                            else {
+                                $html .= MT::ListProperty::make_common_label_html(
+                                    $assetobject, $app, 'label', 'No label'
+                                );
+                            }
+                        }
+                    }
+
+                    return $html;
+                },
+            },
         },
         # Blog
         blog => {
