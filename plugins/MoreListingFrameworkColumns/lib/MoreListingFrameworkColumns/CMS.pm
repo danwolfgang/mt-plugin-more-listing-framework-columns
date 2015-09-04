@@ -521,7 +521,7 @@ sub list_properties {
         my $cf_basename = 'field.' . $field->basename;
 
         $menu->{ $field->obj_type }->{ $field->basename } = {
-            label   => $field->name,
+            label   => $field->name || 'No field name.',
             display => 'optional',
             order   => $order++,
             condition => sub {
@@ -620,7 +620,7 @@ sub theme_label {
 }
 
 # Filter custom fields with the specified text and option. This isn't perfect;
-# it's really focused on parsing strings. Other, more complext, types of CF data
+# it's really focused on parsing strings. Other, more complex, types of CF data
 # probably can't be well-filtered by this basic capability.
 sub filter_custom_field {
     my ($arg_ref) = @_;
