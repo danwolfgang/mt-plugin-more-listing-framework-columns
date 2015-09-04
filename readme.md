@@ -23,7 +23,8 @@ Framework (in addition to Custom Fields for any object type):
 * Activity Log: ID, Class, Category, Level, Metadata
 
 * Assets: Class, Description, URL, File Path, File Name, File Extension, Image
-  Width, Image Height, Appears In... (shows which objects use this asset)
+  Width, Image Height, Appears In... (shows which objects use this asset),
+  Modified On, Modified By
 
 * Author: ID, Basename, Preferred Language, Page Count, Lockout Status
 
@@ -38,6 +39,10 @@ Framework (in addition to Custom Fields for any object type):
 
 * Custom Fields: ID, Required, Description, Field Options, Basename, and
   Default Value. Also, simplified the Template Tag display.
+
+* Entry: Date Created, Modified By
+
+* Page: Modified By
 
 * Website: Description, Site Path, Site URL, Archive Path, Archive URL, Theme
 

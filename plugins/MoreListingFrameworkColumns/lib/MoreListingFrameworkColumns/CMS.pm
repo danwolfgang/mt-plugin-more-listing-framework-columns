@@ -40,6 +40,68 @@ sub list_properties {
     my $app = MT->instance;
 
     my $menu = {
+        __virtual => {
+            modified_by => {
+                base    => '__virtual.author_name',
+                label   => 'Modified By',
+                display => 'Optional',
+                order   => 701,
+                raw     => sub {
+                    my ( $prop, $obj ) = @_;
+                    my $col    = 'modified_by';
+                    if ( $obj->$col ) {
+                        my $author = MT->model('author')->load( $obj->$col );
+                        return $author
+                            ? ( $author->nickname || $author->name )
+                            : MT->translate('*User deleted*');
+                    }
+                },
+                terms => sub {
+                    my $prop = shift;
+                    my ( $args, $load_terms, $load_args ) = @_;
+                    my $col     = 'modified_by';
+                    my $driver  = $prop->datasource->driver;
+                    my $colname = $driver->dbd->db_column_name(
+                        $prop->datasource->datasource, $col );
+                    $prop->{col} = 'name';
+                    my $name_query = $prop->super(@_);
+                    $prop->{col} = 'nickname';
+                    my $nick_query = $prop->super(@_);
+                    $load_args->{joins} ||= [];
+                    push @{ $load_args->{joins} },
+                        MT->model('author')->join_on(
+                        undef,
+                        [   [   {   id => \"= $colname",
+                                    %$name_query,
+                                },
+                                (   $args->{'option'} eq 'not_contains'
+                                    ? '-and'
+                                    : '-or'
+                                ),
+                                {   id => \"= $colname",
+                                    %$nick_query,
+                                },
+                            ]
+                        ],
+                        {}
+                    );
+                },
+                bulk_sort => sub {
+                    my $prop = shift;
+                    my ($objs) = @_;
+                    my $col       = 'modified_by';
+                    my %author_id = map { $_->$col => 1 } @$objs;
+                    my @authors   = MT->model('author')
+                        ->load( { id => [ keys %author_id ] } );
+                    my %nickname
+                        = map { $_->id => $_->nickname } @authors;
+                    return sort {
+                        $nickname{ $a->$col } cmp $nickname{ $b->$col }
+                    } @$objs;
+                },
+            },
+        },
+
         # Activity Log
         log => {
             id => {
@@ -227,8 +289,12 @@ sub list_properties {
                 },
             },
         },
-        # Pages - Define 'author_id' filter type for Pages
+        # Pages
         page => {
+            modified_by => {
+                base => '__virtual.modified_by',
+            },
+            # Define 'author_id' filter type for Pages
             author_id => {
                 base            => 'entry.author_id',
                 label_via_param => sub {
@@ -237,6 +303,18 @@ sub list_properties {
                     my $author = MT->model('author')->load($val);
                     return MT->translate( 'Pages by [_1]', $author->nickname, );
                 },
+            },
+        },
+        # Entries
+        entry => {
+            created_on => {
+                base    => '__virtual.created_on',
+                auto    => 1,
+                display => 'optional',
+                order   => 599,
+            },
+            modified_by => {
+                base => '__virtual.modified_by',
             },
         },
         # Commenters, really just a subset of Authors
@@ -366,6 +444,16 @@ sub list_properties {
                     return $html;
                 },
             },
+            modified_on => {
+                base  => '__virtual.modified_on',
+                order => 700,
+                display => 'optional',
+                auto => 1,
+            },
+            modified_by => {
+                base => '__virtual.modified_by',
+            },
+            
         },
         # Blog
         blog => {
