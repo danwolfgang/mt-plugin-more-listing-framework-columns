@@ -445,10 +445,10 @@ sub list_properties {
                 },
             },
             modified_on => {
-                base  => '__virtual.modified_on',
-                order => 700,
+                base    => '__virtual.modified_on',
+                order   => 700,
                 display => 'optional',
-                auto => 1,
+                auto    => 1,
             },
             modified_by => {
                 base => '__virtual.modified_by',
