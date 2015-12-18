@@ -10,3 +10,6 @@ callbacks:
     cms_filtered_list_param: $MorelistingFrameworkColumns::MoreListingFrameworkColumns::CMS::cms_filtered_list_param
 
 list_properties: $MorelistingFrameworkColumns::MoreListingFrameworkColumns::CMS::list_properties
+
+system_filters:
+    asset: $MorelistingFrameworkColumns::MoreListingFrameworkColumns::Object::Asset::system_filters

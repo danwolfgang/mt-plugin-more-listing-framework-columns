@@ -24,7 +24,8 @@ Framework (in addition to Custom Fields for any object type):
 
 * Assets: Class, Description, URL, File Path, File Name, File Extension, Image
   Width, Image Height, Appears In... (shows which objects use this asset),
-  Modified On, Modified By
+  Modified On, Modified By, Parent-Child Relationship (additionally filter for
+  parent or child assets)
 
 * Author: ID, Basename, Preferred Language, Page Count, Lockout Status
 

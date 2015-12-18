@@ -9,6 +9,58 @@ sub list_properties {
             display => 'optional',
             order   => 201,
         },
+        parent_child_relationship => {
+            label   => 'Parent-Child Relationship',
+            display => 'optional',
+            order   => 202,
+            html    => sub {
+                my ( $prop, $obj, $app ) = @_;
+
+                return 'Parent' if !$obj->parent;
+
+                my $parent = $app->model('asset')->load( $obj->parent );
+                my $label  = $parent && $parent->id
+                    ? $parent->id
+                    : '[Missing]';
+
+                my $url = $app->uri(
+                    'mode' => 'view',
+                    args   => {
+                        _type   => 'asset',
+                        id      => $parent->id,
+                        blog_id => $parent->blog_id,
+                    },
+                );
+
+                return "Child of <a href=\"$url\">ID $label</a>";
+            },
+            # Make the column sortable
+            bulk_sort => sub {
+                my ($prop, $objs, $opts) = @_;
+                return sort { $a->parent <=> $b->parent } @$objs;
+            },
+            filter_tmpl => qq{
+                <mt:Var name="label" escape="js">: asset is
+                <select class="<mt:Var name="type">-option">
+                    <option value="child">Child of</option>
+                    <option value="parent">Parent</option>
+                </select>
+                <input type="text"
+                    class="prop-string <mt:Var name="type">-string text med"
+                    value="" />
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args, $opts ) = @_;
+
+                if ( $args->{option} eq 'child' && $args->{string} ) {
+                    return { 'parent' => $args->{string} };
+                }
+                elsif ($args->{option} eq 'parent' ) {
+                    return { 'parent' => \'is null' };
+                }
+            },
+        },
         description => {
             display => 'optional',
             order   => 300,
@@ -56,6 +108,24 @@ sub list_properties {
         },
         modified_by => {
             base => '__virtual.modified_by',
+        },
+    };
+}
+
+sub system_filters {
+    return {
+        parent_child_relationship => {
+            label => 'Hide Children Assets',
+            order => 1000,
+            items => [
+                {
+                    type => 'parent',
+                    args => {
+                        option => 'parent',
+                        string => 'is null',
+                    },
+                },
+            ],
         },
     };
 }
