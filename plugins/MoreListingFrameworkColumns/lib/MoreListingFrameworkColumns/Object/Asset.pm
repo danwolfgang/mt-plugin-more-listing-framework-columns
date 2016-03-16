@@ -119,7 +119,7 @@ sub system_filters {
             order => 1000,
             items => [
                 {
-                    type => 'parent',
+                    type => 'parent_child_relationship',
                     args => {
                         option => 'parent',
                         string => 'is null',
